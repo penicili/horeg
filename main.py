@@ -18,10 +18,15 @@ intents.voice_states = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 sounds = {
-    "sound1": "",
-    "sound2": "",
-    "sound3": ""
+    "ambatukam": "ambatukam.mp3",
+    "leave": "discord-leave.mp3",
+    "watesigma": "Erm, What the Sigma_ - Sound Effect.mp3",
+    "wuatdehel" : "wewewew wutdaheeel.mp3",
+    "wssk" : "wong saya suka kok #shorts #fyp #ganjar #memesdaily.mp3",
+    "knock" : "y2mate.com - Knock knock sound effect (1).mp3",
+    "omkegams" : "y2mate.com - OKE GAS PRABOWO GIBRAN PALING PAS.mp3"
 }
+sound_directory = "./soundboards"
 
 @bot.event
 async def on_ready():
@@ -44,7 +49,7 @@ async def fuckyou(ctx, name = None):
     await ctx.reply(response.text)
     
 @bot.command()
-async def sound(ctx):
+async def sound(ctx, sound: str):
     if ctx.author.voice and ctx.author.voice.channel:
         print('Masuk voice channel')
         channel = ctx.author.voice.channel
@@ -52,9 +57,15 @@ async def sound(ctx):
         try:
             vc = await channel.connect()
             await ctx.reply(f"Connected to {channel.name}!")
+            # cari sound di dictionary
+            sound_file = sounds.get(sound.lower())
+            if not sound_file:
+                await ctx.reply(f"Sound '{sound}' not found.")
+                await vc.disconnect()
+                return
+            vc.play(discord.FFmpegPCMAudio(f"{sound_directory}/{sound_file}"))
         except Exception as e:
             await ctx.reply(f"Error connecting to voice channel: {e}")
-
     else:
         await ctx.reply("You must be in a voice channel to use this command.")
 

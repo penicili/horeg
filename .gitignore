@@ -35,3 +35,5 @@ __pypackages__/
 *.DS_Store
 Thumbs.db
 discord.log
+soundboards/*
+!soundboards/.gitkeep
