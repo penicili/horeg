@@ -4,8 +4,9 @@ import logging
 from dotenv import load_dotenv
 import os
 import requests
+from asyncio import sleep
 
-# load .evn
+# load .env
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
@@ -55,15 +56,20 @@ async def sound(ctx, sound: str):
         channel = ctx.author.voice.channel
         print (channel)
         try:
-            vc = await channel.connect()
-            await ctx.reply(f"Connected to {channel.name}!")
-            # cari sound di dictionary
+            if not ctx.voice_client:
+                vc = await channel.connect()
+                await ctx.reply(f"Connected to {channel.name}!")
+            else: 
+                vc = ctx.voice_client
             sound_file = sounds.get(sound.lower())
             if not sound_file:
                 await ctx.reply(f"Sound '{sound}' not found.")
                 await vc.disconnect()
                 return
             vc.play(discord.FFmpegPCMAudio(f"{sound_directory}/{sound_file}"))
+            while vc.is_playing():
+                await sleep(2)
+            await vc.disconnect()
         except Exception as e:
             await ctx.reply(f"Error connecting to voice channel: {e}")
     else:
