@@ -83,4 +83,8 @@ async def leave(ctx):
     else:
         await ctx.send("I'm not in a voice channel.")
 
+@bot.command()
+async def list(ctx):
+    await ctx.send("Available sounds:\n" + "\n".join(f"- {sound}" for sound in sounds.keys()))
+
 bot.run(token,log_handler=handler, log_level=logging.DEBUG)
