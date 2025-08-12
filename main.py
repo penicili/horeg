@@ -17,6 +17,12 @@ intents.voice_states = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
+sounds = {
+    "sound1": "",
+    "sound2": "",
+    "sound3": ""
+}
+
 @bot.event
 async def on_ready():
     print(f"{bot.user.name} is ready")
