@@ -13,6 +13,7 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+intents.voice_states = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -21,21 +22,9 @@ async def on_ready():
     print(f"{bot.user.name} is ready")
 
 
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-    
-    if "job" in message.content.lower():
-        await message.delete()
-        await message.channel.send(f"{message.author.mention} J word are prohibited in this channel")
-    
-    await bot.process_commands(message)
-
-
 @bot.command()
 async def ping(ctx):
-    await ctx.send(f'Pong! {ctx.author.mention}')
+    await ctx.reply(f'Pong! {ctx.author.mention}')
 
 @bot.command()
 async def fuckyou(ctx, name = None):
@@ -47,5 +36,28 @@ async def fuckyou(ctx, name = None):
     }
     response = requests.get(url, params=params)
     await ctx.reply(response.text)
+    
+@bot.command()
+async def sound(ctx):
+    if ctx.author.voice and ctx.author.voice.channel:
+        print('Masuk voice channel')
+        channel = ctx.author.voice.channel
+        print (channel)
+        try:
+            vc = await channel.connect()
+            await ctx.reply(f"Connected to {channel.name}!")
+        except Exception as e:
+            await ctx.reply(f"Error connecting to voice channel: {e}")
+
+    else:
+        await ctx.reply("You must be in a voice channel to use this command.")
+
+@bot.command()
+async def leave(ctx):
+    if ctx.voice_client:
+        await ctx.voice_client.disconnect()
+        await ctx.send(f"Disconnected from voice channel")
+    else:
+        await ctx.send("I'm not in a voice channel.")
 
 bot.run(token,log_handler=handler, log_level=logging.DEBUG)
